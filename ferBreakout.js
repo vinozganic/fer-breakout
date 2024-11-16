@@ -7,21 +7,21 @@ const BALL_Y_OFFSET = 10;
 
 const STICK_WIDTH = 250;
 const STICK_HEIGHT = 10;
-const STICK_SPEED = 13;
+const STICK_SPEED = 6;
 const STICK_MOVE_MULTIPLIER = 2;
 const STICK_Y_OFFSET = 20;
 
-const BRICK_ROW_COUNT = 2;
-const BRICK_COLUMN_COUNT = 1;
+const BRICK_ROW_COUNT = 4;
+const BRICK_COLUMN_COUNT = 8;
 const BRICK_WIDTH_OFFSET = 11;
 const BRICK_HEIGHT = 20;
 const BRICK_PADDING = 10;
-const BRICK_OFFSET_TOP = 50;
+const BRICK_OFFSET_TOP = 40;
 const BRICK_OFFSET_LEFT = 10;
 
-const SCORE_X_OFFSET = 80;
-const HIGHSCORE_X_OFFSET = 240;
-const SCORE_HIGHSCORE_Y_OFFSET = 20;
+const SCORE_X_OFFSET = 90;
+const HIGHSCORE_X_OFFSET = 260;
+const SCORE_HIGHSCORE_Y_OFFSET = 25;
 
 /*======================
     Definicije klasa
@@ -210,7 +210,11 @@ function renderScores() {
     context.font = "20px Arial";
     context.fillStyle = "darkblue";
     context.textAlign = "center";
-    context.fillText(`Current score: ${score}`, canvas.width - SCORE_X_OFFSET, SCORE_HIGHSCORE_Y_OFFSET);
+    context.fillText(
+        `Current score: ${score}/${bricks.length}`,
+        canvas.width - SCORE_X_OFFSET,
+        SCORE_HIGHSCORE_Y_OFFSET
+    );
     context.fillText(`Highscore: ${getHighscore()}`, canvas.width - HIGHSCORE_X_OFFSET, SCORE_HIGHSCORE_Y_OFFSET);
 }
 
@@ -263,6 +267,9 @@ function infiniteGameLoop() {
 
     context.clearRect(0, 0, canvas.width, canvas.height);
 
+    if (keyState.ArrowLeft) stick.move(-1);
+    if (keyState.ArrowRight) stick.move(1);
+
     ball.update();
     ball.draw(context);
 
@@ -290,11 +297,30 @@ function infiniteGameLoop() {
 }
 
 /*======================
-Claude: UNESI ISPRAVAN TEKST
+Praćenje tipki na tipkovnici
 ========================*/
+const keyState = {
+    ArrowLeft: false,
+    ArrowRight: false,
+};
+
+// Handle keydown events
 document.addEventListener("keydown", event => {
-    if (event.key === "ArrowLeft") stick.move(-1);
-    if (event.key === "ArrowRight") stick.move(1);
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        if (!keyState[event.key]) {
+            // Only update if key wasn't already pressed
+            keyState[event.key] = true;
+        }
+        event.preventDefault(); // Prevent default behavior
+    }
+});
+
+// Handle keyup events
+document.addEventListener("keyup", event => {
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        keyState[event.key] = false;
+        event.preventDefault(); // Prevent default behavior
+    }
 });
 
 /*======================
